@@ -16,3 +16,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_executable(VisualizeWatersheder VisualizeWatersheder.cpp)
 target_link_libraries(VisualizeWatersheder PUBLIC libDataAnnotationTools ${OpenCV_LIBS} ${Boost_LIBRARIES})
 target_include_directories(VisualizeWatersheder PUBLIC "${PROJECT_BINARY_DIR}")
+
+add_executable(LearnOpenGL LearnOpenGL.cpp)
+target_link_libraries(LearnOpenGL PUBLIC libDataAnnotationTools)
+target_include_directories(LearnOpenGL PUBLIC "${PROJECT_BINARY_DIR}")
+

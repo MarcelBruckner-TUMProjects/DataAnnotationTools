@@ -4,7 +4,7 @@
 #include "Watersheder.hpp"
 
 int main(int argc, char const *argv[]) {
-	auto watersheder = providentia::calibration::Watersheder(
+	auto watersheder = dataannotationtools::Watersheder(
 			"../misc/s40_n_cam_far_calibration_test_image.png"
 	);
 	watersheder.run();

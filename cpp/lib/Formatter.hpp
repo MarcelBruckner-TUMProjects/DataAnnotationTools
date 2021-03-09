@@ -48,8 +48,8 @@ namespace dataannotationtools {
 		int biggestComponent = GetBiggestComponent(watershedRegions, componentCount);
 
 		std::map<int, std::vector<std::vector<int>>> componentsToPixels;
-		for (int i = 0; i < watershedRegions.rows; i++) {
-			for (int j = 0; j < watershedRegions.cols; j++) {
+		for (int j = 0; j < watershedRegions.cols; j++) {
+			for (int i = 0; i < watershedRegions.rows; i++) {
 				int index = watershedRegions.at<int>(i, j);
 				if (index <= 0 || index > componentCount) {
 					continue;

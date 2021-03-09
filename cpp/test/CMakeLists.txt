@@ -42,14 +42,17 @@ endif ()
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+#find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 ########################################################################################################################
 ### TESTING ###
 ########################################################################################################################
-#add_executable(Tests)
-#target_link_libraries(Tests PUBLIC libDataAnnotationTools gtest_main ${OpenCV_LIBS} Eigen3::Eigen)
-#target_include_directories(Tests PUBLIC tests "${PROJECT_BINARY_DIR}")
-#
+add_executable(Tests
+        ProgramOptionsTests.cpp)
+target_link_libraries(Tests PUBLIC libDataAnnotationTools gtest_main ${OpenCV_LIBS}
+        #        Eigen3::Eigen
+        )
+target_include_directories(Tests PUBLIC tests "${PROJECT_BINARY_DIR}")
+
 include_directories(../misc/)
-#add_test(AllTests Tests)
+add_test(AllTests Tests)

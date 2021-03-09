@@ -17,10 +17,11 @@ namespace dataannotationtools {
 	 */
 	class Watersheder {
 	private:
+
 		/**
-		 * The input and filenames.
+		 * The input and output filenames.
 		 */
-		std::string inputFilename;
+		std::string inputFilename, outputFilename;
 
 		/**
 		 * The name of the main window where drawing the watershedMarkers is performed.
@@ -109,11 +110,6 @@ namespace dataannotationtools {
 		cv::Rect getRoi() const;
 
 		/**
-		 * Creates an output filename based on the input filename.
-		 */
-		std::string createOutputFilename() const;
-
-		/**
 		 * Callback for mouse events.
 		 * @param event The event code.
 		 * @param x Mouse X position.
@@ -190,7 +186,7 @@ namespace dataannotationtools {
 		/**
 		 * @constructor.
 		 */
-		explicit Watersheder(const std::string &_filename);
+		Watersheder(const std::string &_inputFilename, const std::string &_outputFilename);
 
 		/**
 		 * @destructor

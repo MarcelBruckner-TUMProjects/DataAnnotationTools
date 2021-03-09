@@ -47,8 +47,9 @@ namespace dataannotationtools {
 		}
 	}
 
-	Watersheder::Watersheder(const std::string &_filename) {
-		inputFilename = _filename;
+	Watersheder::Watersheder(const std::string &_inputFilename, const std::string &_outputFilename) {
+		inputFilename = _inputFilename;
+		outputFilename = _outputFilename;
 
 		image = cv::imread(inputFilename);
 		cv::namedWindow(mainWindowName, cv::WINDOW_NORMAL);
@@ -67,17 +68,6 @@ namespace dataannotationtools {
 		cv::createTrackbar(thicknessName, mainWindowName, &thickness, 9);
 
 		setTrackbarValues();
-	}
-
-	std::string Watersheder::createOutputFilename() const {
-		std::string segment;
-		std::vector<std::string> seglist;
-		std::stringstream ss{inputFilename};
-		while (std::getline(ss, segment, '/')) {
-			seglist.push_back(segment);
-		}
-		auto file = seglist.back();
-		return "_watershed_" + file;
 	}
 
 	void Watersheder::run() {
@@ -110,7 +100,7 @@ namespace dataannotationtools {
 			drawnMarkers(getRoi()) = cv::Scalar::all(0);
 		}
 		if (c == 's') {
-			cv::imwrite(createOutputFilename(), watershedMask);
+			cv::imwrite(outputFilename, watershedMask);
 		}
 	}
 

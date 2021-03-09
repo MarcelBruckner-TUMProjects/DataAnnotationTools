@@ -1,4 +1,3 @@
 cmake_minimum_required(VERSION 3.10)
 
-file(GLOB MISCELLANEOUS_FILES "*.png")
-file(COPY ${MISCELLANEOUS_FILES} DESTINATION ./)
+configure_file(test_frame.png test_frame.png COPYONLY)

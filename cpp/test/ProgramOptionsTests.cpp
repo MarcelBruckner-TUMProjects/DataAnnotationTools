@@ -23,7 +23,7 @@ namespace dataannotationtools {
 		};
 
 		/**
-		 * Tests the help text for the default arguments description.
+		 * Tests the help text for the default options description.
 		 */
 		TEST_F(ProgramOptionsTests, testDefaultArguments) {
 			std::vector<char *> argv;
@@ -41,7 +41,7 @@ namespace dataannotationtools {
 		}
 
 		/**
-		 * Tests the getting the help text for the default arguments.
+		 * Tests the getting the help text for the default options.
 		 */
 		TEST_F(ProgramOptionsTests, testGetHelp) {
 			std::vector<const char *> argv;

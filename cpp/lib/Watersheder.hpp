@@ -24,17 +24,32 @@ namespace dataannotationtools {
 		std::string inputFilename, outputFilename;
 
 		/**
-		 * The name of the main window where drawing the watershedMarkers is performed.
+		 * The name of the main window where drawing the watershedRegions is performed.
 		 */
 		std::string mainWindowName = "Watersheder";
 
 		/**
 		 * The image buffers.
 		 */
-		cv::Mat image, imageGray, drawnMarkers, watershedMask, watershedMarkers;
+		cv::Mat image, imageGray, drawnMarkers, watershedMask, watershedRegions, markerIds;
 
 		/**
-		 * The point that holds the mouse position used to create the watershedMarkers.
+		 * The number of found components.
+		 */
+		int componentCount = -1;
+
+		/**
+		 * The contours.
+		 */
+		std::vector<std::vector<cv::Point> > contours;
+
+		/**
+		 * The contour hierarchy.
+		 */
+		std::vector<cv::Vec4i> hierarchy;
+
+		/**
+		 * The point that holds the mouse position used to create the watershedRegions.
 		 */
 		cv::Point drawingPointBuffer{-1, -1};
 		/**
@@ -93,6 +108,11 @@ namespace dataannotationtools {
 		 * Flag indicating whether deletion mode is on.
 		 */
 		bool drawWatershedMask = false;
+
+		/**
+		 * Flag if the biggest component should be skipped when writing to file.
+		 */
+		bool keepBiggestComponent = false;
 
 		/**
 		 * @get The number of pixels in x direction.
@@ -155,7 +175,7 @@ namespace dataannotationtools {
 		 * Creates the color coded watershed mask.
 		 * @param regions The number of found distinct regions.
 		 */
-		void createWatershedMask(int regions);
+		void createWatershedMask();
 
 		/**
 		 * Sets the thickness based on the input keyboard number.
@@ -186,7 +206,7 @@ namespace dataannotationtools {
 		/**
 		 * @constructor.
 		 */
-		Watersheder(const std::string &_inputFilename, const std::string &_outputFilename);
+		Watersheder(const std::string &inputFilename, std::string outputFilename, bool keepBiggestComponent = true);
 
 		/**
 		 * @destructor
@@ -199,9 +219,14 @@ namespace dataannotationtools {
 		void run();
 
 		/**
-		 * Renders the image and overlays the watershedMarkers.
+		 * Renders the image and overlays the watershedRegions.
 		 */
 		cv::Mat draw() const;
+
+		/**
+		 * Saves the marker pixels to the output file.
+		 */
+		void save();
 	};
 }
 #endif //DATAANNOTATIONTOOLS_WATERSHEDER_HPP

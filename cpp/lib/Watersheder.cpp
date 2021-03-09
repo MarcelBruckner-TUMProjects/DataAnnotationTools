@@ -4,6 +4,10 @@
 
 #include "Watersheder.hpp"
 
+#include <utility>
+#include "yaml-cpp/yaml.h"
+#include "Formatter.hpp"
+
 namespace dataannotationtools {
 
 	int Watersheder::getMaxX() const {
@@ -47,10 +51,9 @@ namespace dataannotationtools {
 		}
 	}
 
-	Watersheder::Watersheder(const std::string &_inputFilename, const std::string &_outputFilename) {
-		inputFilename = _inputFilename;
-		outputFilename = _outputFilename;
-
+	Watersheder::Watersheder(const std::string &inputFilename, std::string outputFilename,
+							 bool keepBiggestComponent) : inputFilename(inputFilename), outputFilename
+			(std::move(outputFilename)), keepBiggestComponent(keepBiggestComponent) {
 		image = cv::imread(inputFilename);
 		cv::namedWindow(mainWindowName, cv::WINDOW_NORMAL);
 
@@ -100,8 +103,17 @@ namespace dataannotationtools {
 			drawnMarkers(getRoi()) = cv::Scalar::all(0);
 		}
 		if (c == 's') {
-			cv::imwrite(outputFilename, watershedMask);
+			save();
 		}
+	}
+
+	void Watersheder::save() {
+		std::ofstream outputFile;
+		outputFile.open(outputFilename);
+		outputFile << dataannotationtools::WatershederToYAML(watershedRegions, componentCount, keepBiggestComponent);
+		outputFile.close();
+
+		cv::imwrite(outputFilename + ".png", draw());
 	}
 
 	void Watersheder::quickZoom(char c) {
@@ -130,8 +142,6 @@ namespace dataannotationtools {
 	}
 
 	int Watersheder::findMarkerContours() {
-		std::vector<std::vector<cv::Point> > contours;
-		std::vector<cv::Vec4i> hierarchy;
 		cv::Mat _markerMask;
 		cv::cvtColor(drawnMarkers, _markerMask, cv::COLOR_BGR2GRAY);
 		findContours(_markerMask, contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
@@ -139,12 +149,12 @@ namespace dataannotationtools {
 			return 0;
 		}
 
-		int i, j, compCount = 0;
-		watershedMarkers = {drawnMarkers.size(), CV_32S};
-		watershedMarkers = cv::Scalar::all(0);
+		int compCount = 0;
+		watershedRegions = {drawnMarkers.size(), CV_32S};
+		watershedRegions = cv::Scalar::all(0);
 		int idx = 0;
 		for (; idx >= 0; idx = hierarchy[idx][0], compCount++) {
-			drawContours(watershedMarkers, contours, idx, cv::Scalar::all(compCount + 1), -1, 8, hierarchy,
+			drawContours(watershedRegions, contours, idx, cv::Scalar::all(compCount + 1), -1, 8, hierarchy,
 						 INT_MAX);
 		}
 
@@ -152,26 +162,36 @@ namespace dataannotationtools {
 	}
 
 	bool Watersheder::algorithm() {
-		int compCount = findMarkerContours();
-		if (compCount <= 0) {
+		componentCount = findMarkerContours();
+		if (componentCount <= 0) {
 			return false;
 		}
 
-		watershed(image, watershedMarkers);
-		createWatershedMask(compCount);
+		watershed(image, watershedRegions);
+		createWatershedMask();
 		return true;
 	}
 
-	void Watersheder::createWatershedMask(int regions) {
-		std::vector<cv::Vec3b> colorTab = generateRandomColors(regions);
-		watershedMask = cv::Mat(watershedMarkers.size(), CV_8UC3);
+	void Watersheder::createWatershedMask() {
+		std::vector<cv::Vec3b> colorTab = generateRandomColors(componentCount);
+		watershedMask = cv::Mat(watershedRegions.size(), CV_8UC3);
+		markerIds = cv::Mat::zeros(watershedRegions.size(), CV_8UC3);
+
+		std::set<int> alreadyWrittenMarkerIds;
 		// paint the watershed image
-		for (int i = 0; i < watershedMarkers.rows; i++) {
-			for (int j = 0; j < watershedMarkers.cols; j++) {
-				int index = watershedMarkers.at<int>(i, j);
+		for (int i = 0; i < watershedRegions.rows; i++) {
+			for (int j = 0; j < watershedRegions.cols; j++) {
+				int index = watershedRegions.at<int>(i, j);
+				if (alreadyWrittenMarkerIds.find(index) == alreadyWrittenMarkerIds.end()) {
+					if (index != -1) {
+						cv::putText(markerIds, std::to_string(index), {j, i + 24}, cv::FONT_HERSHEY_SIMPLEX, 1,
+									{255, 255, 255}, 1, cv::LINE_AA);
+					}
+					alreadyWrittenMarkerIds.emplace(index);
+				}
 				if (index == -1) {
 					watershedMask.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
-				} else if (index <= 0 || index > regions) {
+				} else if (index <= 0 || index > componentCount) {
 					watershedMask.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
 				} else {
 					watershedMask.at<cv::Vec3b>(i, j) = colorTab[index - 1];
@@ -199,7 +219,6 @@ namespace dataannotationtools {
 	}
 
 	cv::Mat Watersheder::draw() const {
-		auto roi = getRoi();
 		cv::Mat result;
 
 		if (!drawWatershedMask) {
@@ -207,7 +226,7 @@ namespace dataannotationtools {
 		} else {
 			result = (watershedMask * 0.5 + imageGray * 0.5);
 		}
-		result = result(roi) + drawnMarkers(roi);
+		result = (result + drawnMarkers + markerIds)(getRoi());
 		return result.clone();
 	}
 

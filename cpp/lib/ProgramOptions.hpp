@@ -9,46 +9,55 @@
 #include <string>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <utility>
 
 namespace po = boost::program_options;
 
 namespace dataannotationtools {
 
-	/**
-	 * Creates the default arguments used in the data annotation tools.
-	 */
-	po::options_description GetDefaultProgramOptions(std::string toolname) {
-		po::options_description desc(toolname);
-		desc.add_options()
-				("help,h", "Show this help message.")
-				("input,i",
-				 po::value<std::string>()->default_value("../misc/test_frame.png"),
-				 "The path to the input file.")
-				("output,o",
-				 po::value<std::string>()->default_value("./result.yaml"),
-				 "The path to the output file.");
-		return desc;
+	inline bool FileExists(const std::string &name) {
+		return std::ifstream{name.c_str()}.good();
 	}
 
-	/**
-	 * Parses the input arguments and checks for the default values.
-	 *
-	 * @param description The argument options description.
-	 * @param argc The number of arguments.
-	 * @param argv The arguments.
-	 */
-	po::variables_map ParseOptions(const po::options_description &description, int argc, const char **argv) {
-		po::variables_map vm;
-		po::store(po::parse_command_line(argc, argv, description), vm);
-		po::notify(vm);
+	class ProgramOptions {
+	private:
+		std::shared_ptr<po::options_description> description;
+		po::variables_map options;
 
-		if (vm.count("help") || vm.count("h")) {
-			std::cout << description << std::endl;
-			throw std::logic_error("Leaving gracefully, nothing to worry! :)");
-		}
+		bool overrideOutputFile = true;
 
-		return vm;
-	}
+		/**
+		 * Creates the default options used in the data annotation tools.
+		 */
+		void createDefaultOptions();
+
+	public:
+
+		/**
+		 * @constructor
+		 *
+		 * @param toolname The name of the tool
+		 */
+		explicit ProgramOptions(const std::string &toolname);;
+
+		/**
+		 * Parses the input options and checks for the default values.
+		 *
+		 * @param description The argument options description.
+		 * @param argc The number of options.
+		 * @param argv The options.
+		 */
+		void parse(int argc, const char **argv);
+
+		bool has(const std::string &key);
+
+		template<typename T>
+		T get(const std::string &key);
+
+		po::options_description_easy_init addOption();
+	};
+
 }
 
 #endif //DATAANNOTATIONTOOLS_PROGRAMOPTIONS_H

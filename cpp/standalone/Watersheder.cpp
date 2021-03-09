@@ -11,13 +11,19 @@ namespace po = boost::program_options;
  * Run the watersheder.
 g */
 int main(int argc, char const *argv[]) {
-	po::options_description description = dataannotationtools::GetDefaultProgramOptions("Watersheder");
-	auto variableMap = dataannotationtools::ParseOptions(description, argc, argv);
+	auto programOptions = dataannotationtools::ProgramOptions("Watersheder");
+	bool keepBiggestComponent;
+	programOptions.addOption()
+			("keep_biggest_component,k",
+			 po::bool_switch(&keepBiggestComponent),
+			 "Flag to keep the biggest component when writing to the result file."
+			);
+	programOptions.parse(argc, argv);
 
 	auto watersheder = dataannotationtools::Watersheder(
-			variableMap["input"].as<std::string>(),
-			variableMap["output"].as<std::string>()
-	);
+			programOptions.get<std::string>("input"),
+			programOptions.get<std::string>("output"),
+			keepBiggestComponent);
 	watersheder.run();
 
 	return 0;

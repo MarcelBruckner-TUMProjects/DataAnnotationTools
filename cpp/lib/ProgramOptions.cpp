@@ -25,7 +25,7 @@ namespace dataannotationtools {
 		po::notify(options);
 
 		if (has("help")) {
-			std::cout << description << std::endl;
+			std::cout << *description << std::endl;
 			throw std::logic_error("Leaving gracefully, nothing to worry! :)");
 		}
 

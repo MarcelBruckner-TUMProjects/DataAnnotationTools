@@ -16,10 +16,6 @@ namespace dataannotationtools {
 		class ProgramOptionsTests : public ::testing::Test {
 		protected:
 
-			/**
-			 * The default options description.
-			 */
-			po::options_description description = dataannotationtools::GetDefaultProgramOptions("Test");
 		};
 
 		/**
@@ -28,14 +24,17 @@ namespace dataannotationtools {
 		TEST_F(ProgramOptionsTests, testDefaultArguments) {
 			std::vector<char *> argv;
 
+			auto programOptions = dataannotationtools::ProgramOptions("Test");
+
 			std::stringstream actual;
-			actual << description;
+			actual << programOptions;
 
 			std::string expected = "Test:\n"
 								   "  -h [ --help ]                         Show this help message.\n"
 								   "  -i [ --input ] arg (=../misc/test_frame.png)\n"
 								   "                                        The path to the input file.\n"
-								   "  -o [ --output ] arg (=./result.yaml)  The path to the output file.\n";
+								   "  -o [ --output ] arg (=./result.yaml)  The path to the output file.\n"
+								   "  -r [ --override ]                     The path to the output file.\n";
 
 			ASSERT_STREQ(actual.str().c_str(), expected.c_str());
 		}
@@ -47,10 +46,11 @@ namespace dataannotationtools {
 			std::vector<const char *> argv;
 
 			argv = {const_cast<const char *>("test_name"), const_cast<const char *>("-h")};
-			ASSERT_THROW(dataannotationtools::ParseOptions(description, argv.size(), argv.data()), std::logic_error);
+			auto programOptions = dataannotationtools::ProgramOptions("Test");
+			ASSERT_THROW(programOptions.parse(argv.size(), argv.data()), std::logic_error);
 
 			argv[1] = const_cast<const char *>("--help");
-			ASSERT_THROW(dataannotationtools::ParseOptions(description, argv.size(), argv.data()), std::logic_error);
+			ASSERT_THROW(programOptions.parse(argv.size(), argv.data()), std::logic_error);
 		}
 
 	}

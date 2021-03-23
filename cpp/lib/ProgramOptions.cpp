@@ -58,4 +58,8 @@ namespace dataannotationtools {
 
 	template std::string ProgramOptions::get<std::string>(const std::string &key);
 
+	std::ostream &operator<<(std::ostream &os, const ProgramOptions &options) {
+		os << *options.description;
+		return os;
+	}
 }

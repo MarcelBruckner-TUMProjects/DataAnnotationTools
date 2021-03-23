@@ -56,6 +56,8 @@ namespace dataannotationtools {
 		T get(const std::string &key);
 
 		po::options_description_easy_init addOption();
+
+		friend std::ostream &operator<<(std::ostream &os, const ProgramOptions &options);
 	};
 
 }

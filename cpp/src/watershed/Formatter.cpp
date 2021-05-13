@@ -9,7 +9,7 @@
 namespace data_annotation_tools {
     namespace watersheder {
 
-        int GetBiggestComponent(const cv::Mat &watershedRegions, int componentCount) {
+        int getBiggestComponent(const cv::Mat &watershedRegions, int componentCount) {
             std::map<int, int> componentsToPixelAmount;
             for (int i = 0; i < watershedRegions.rows; i++) {
                 for (int j = 0; j < watershedRegions.cols; j++) {

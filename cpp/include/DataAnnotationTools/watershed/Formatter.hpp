@@ -22,7 +22,7 @@ namespace data_annotation_tools {
          *
          * @return The component id of the biggest component.
          */
-        int GetBiggestComponent(const cv::Mat &watershedRegions, int componentCount);
+        int getBiggestComponent(const cv::Mat &watershedRegions, int componentCount);
 
         /**
          * Converts the watershed regions to a YAML compliant string.

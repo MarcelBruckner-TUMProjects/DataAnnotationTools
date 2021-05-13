@@ -24,7 +24,7 @@ namespace data_annotation_tools {
          *
          * @return true if file exists, false else.
          */
-        inline bool FileExists(const std::string &name) {
+        inline bool fileExists(const std::string &name) {
             return std::ifstream{name.c_str()}.good();
         }
 
@@ -67,6 +67,11 @@ namespace data_annotation_tools {
              * @param toolname The name of the tool
              */
             explicit CommandLineParser(const std::string &toolname);;
+
+            /**
+             * @destructor
+             */
+            virtual ~CommandLineParser() = default;
 
             /**
              * Parses the input options and checks for the default values.

@@ -139,7 +139,7 @@ namespace data_annotation_tools {
              * @param flags Additional flags.
              * @param _watersheder The watersheder object used to apply the performed mouse action.
              */
-            static void onMouse(int event, int x, int y, int flags, void *_watersheder);
+            static void onMouse(int event, int x, int y, int flags, void *watersheder);
 
             /**
              * Zooms in and out of the image base on the mouse position.

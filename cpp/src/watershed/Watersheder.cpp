@@ -19,8 +19,8 @@ namespace data_annotation_tools {
             return image.rows - 1;
         }
 
-        void Watersheder::onMouse(int event, int x, int y, int flags, void *_watersheder) {
-            auto watersheder = (Watersheder *) _watersheder;
+        void Watersheder::onMouse(int event, int x, int y, int flags, void *rawWatersheder) {
+            auto watersheder = (Watersheder *) rawWatersheder;
             int totalX = watersheder->topLeftCorner.x + x;
             int totalY = watersheder->topLeftCorner.y + y;
             if (totalX < 0 || totalX >= watersheder->getMaxX() || totalY < 0 || y >= watersheder->getMaxY()) {
@@ -145,9 +145,9 @@ namespace data_annotation_tools {
         }
 
         int Watersheder::findMarkerContours() {
-            cv::Mat _markerMask;
-            cv::cvtColor(drawnMarkers, _markerMask, cv::COLOR_BGR2GRAY);
-            findContours(_markerMask, contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
+            cv::Mat markerMask;
+            cv::cvtColor(drawnMarkers, markerMask, cv::COLOR_BGR2GRAY);
+            findContours(markerMask, contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
             if (contours.empty()) {
                 return 0;
             }

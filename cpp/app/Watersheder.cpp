@@ -18,19 +18,15 @@ int main(int argc, char const *argv[]) {
              po::bool_switch(&keepBiggestComponent),
              "Flag to keep the biggest component when writing to the result file."
             );
-    try {
-        programOptions.parse(argc, argv);
-    } catch (const std::invalid_argument &exception) {
-        return 0;
-    } catch (const std::logic_error &exception) {
-        return 0;
-    }
+    programOptions.parse(argc, argv);
 
     auto watersheder = data_annotation_tools::watersheder::Watersheder(
             programOptions.get<std::string>("input"),
             programOptions.get<std::string>("output"),
             keepBiggestComponent);
-    watersheder.run();
+    watersheder.
+
+            run();
 
     return 0;
 }

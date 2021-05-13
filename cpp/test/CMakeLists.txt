@@ -12,14 +12,14 @@ include_directories(${PROJECT_SOURCE_DIR}/cpp/extern)
 ########################################################################################################################
 ### TESTING ###
 ########################################################################################################################
-#add_executable(Tests
-#
-#        )
-#target_link_libraries(Tests PUBLIC DataAnnotationTools-lib
-#        gtest_main
-#        ${OpenCV_LIBS}
-#        )
-#target_include_directories(Tests PUBLIC tests "${PROJECT_BINARY_DIR}")
-#
-#
-#add_test(AllTests Tests)
+add_executable(Tests
+        CommandLineParserTests.cpp
+        )
+target_link_libraries(Tests PUBLIC DataAnnotationTools-lib
+        gtest_main
+        ${OpenCV_LIBS}
+        )
+target_include_directories(Tests PUBLIC tests "${PROJECT_BINARY_DIR}")
+
+
+add_test(AllTests Tests)

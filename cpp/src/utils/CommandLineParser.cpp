@@ -26,18 +26,25 @@ namespace data_annotation_tools {
 
             if (has("help")) {
                 std::cout << description << std::endl;
-                throw std::logic_error("Leaving gracefully, nothing to worry! :)");
+                if (has("debug_parser")) {
+                    exit(EXIT_SUCCESS);
+                } else {
+                    return;
+                }
             }
 
             if (!FileExists(get<std::string>("input"))) {
-                throw std::invalid_argument("Input file does not exist.");
+                std::cout << "Input file does not exist." << std::endl;
+                exit(EXIT_FAILURE);
             }
 
             if (FileExists(get<std::string>("output")) && !overrideOutputFile) {
-                throw std::invalid_argument("Output file does exist and override flag not set.");
+                std::cout << "Output file does exist and override flag not set." << std::endl;
+                exit(EXIT_FAILURE);
             }
         }
 
+        // TODO descriptions
         void CommandLineParser::createDefaultOptions() {
             description.add_options()
                     ("help,h", "Show this help message.")
@@ -49,7 +56,10 @@ namespace data_annotation_tools {
                      "The path to the output file.")
                     ("override,r",
                      po::bool_switch(&overrideOutputFile),
-                     "The path to the output file.");
+                     "The path to the output file.")
+                    ("debug_parser",
+                     po::bool_switch(&debugParser),
+                     "Flag if the parser is in debug mode.");
         }
 
         po::options_description_easy_init CommandLineParser::addOption() {

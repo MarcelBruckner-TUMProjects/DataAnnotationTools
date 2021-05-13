@@ -50,6 +50,11 @@ namespace data_annotation_tools {
             bool overrideOutputFile = true;
 
             /**
+             * Flag if the parser is in debug mode.
+             */
+            bool debugParser = true;
+
+            /**
              * Creates the default options used in the data annotation tools.
              */
             void createDefaultOptions();

@@ -38,9 +38,14 @@ namespace data_annotation_tools {
             std::string expected = "Test:\n"
                                    "  -h [ --help ]                         Show this help message.\n"
                                    "  -i [ --input ] arg (=../misc/test_frame.png)\n"
-                                   "                                        The path to the input file.\n"
-                                   "  -o [ --output ] arg (=./result.yaml)  The path to the output file.\n"
-                                   "  -r [ --override ]                     The path to the output file.\n"
+                                   "                                        The path to the input file. The path \n"
+                                   "                                        can be relative or absolute. The type \n"
+                                   "                                        of the file is tool dependent.\n"
+                                   "  -o [ --output ] arg (=./result.yaml)  The path to the output file. The path \n"
+                                   "                                        can be relative or absolute. The type \n"
+                                   "                                        of the output file is tool dependent.\n"
+                                   "  -r [ --override_output ]              Flag if the output file should be \n"
+                                   "                                        overridden if it already exists.\n"
                                    "  --debug_parser                        Flag if the parser is in debug mode.\n";
 
             ASSERT_STREQ(actual.str().c_str(), expected.c_str());

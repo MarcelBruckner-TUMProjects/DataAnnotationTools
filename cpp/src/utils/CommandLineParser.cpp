@@ -6,6 +6,12 @@
 
 namespace data_annotation_tools {
     namespace utils {
+        const std::string HELP_OPTION_NAME = "help";
+        const std::string INPUT_OPTION_NAME = "input";
+        const std::string OUTPUT_OPTION_NAME = "output";
+        const std::string OVERRIDE_OUTPUT_OPTION_NAME = "override_output";
+        const std::string DEBUG_PARSER_OPTION_NAME = "debug_parser";
+
         template<typename T>
         T CommandLineParser::get(const std::string &key) {
             return options[key].template as<T>();
@@ -24,41 +30,39 @@ namespace data_annotation_tools {
             po::store(po::parse_command_line(argc, argv, description), options);
             po::notify(options);
 
-            if (has("help")) {
+            if (has(HELP_OPTION_NAME)) {
                 std::cout << description << std::endl;
-                if (has("debug_parser")) {
+                if (has(DEBUG_PARSER_OPTION_NAME)) {
                     exit(EXIT_SUCCESS);
                 } else {
                     return;
                 }
             }
 
-            if (!fileExists(get<std::string>("input"))) {
+            if (!fileExists(get<std::string>(INPUT_OPTION_NAME))) {
                 std::cout << "Input file does not exist." << std::endl;
                 exit(EXIT_FAILURE);
             }
 
-            if (fileExists(get<std::string>("output")) && !overrideOutputFile) {
+            if (fileExists(get<std::string>(OVERRIDE_OUTPUT_OPTION_NAME)) && !overrideOutputFile) {
                 std::cout << "Output file does exist and override flag not set." << std::endl;
                 exit(EXIT_FAILURE);
             }
         }
 
-        // TODO descriptions
         void CommandLineParser::createDefaultOptions() {
             description.add_options()
-                    ("help,h", "Show this help message.")
-                    ("input,i",
+                    ((HELP_OPTION_NAME + ",h").c_str(), "Show this help message.")
+                    ((INPUT_OPTION_NAME + ",i").c_str(),
                      po::value<std::string>()->default_value("../misc/test_frame.png"),
-                     "The path to the input file.")
-                    ("output,o",
+                     "The path to the input file. The path can be relative or absolute. The type of the file is tool dependent.")
+                    ((OUTPUT_OPTION_NAME + ",o").c_str(),
                      po::value<std::string>()->default_value("./result.yaml"),
-                     "The path to the output file.")
-                    ("override,r",
+                     "The path to the output file. The path can be relative or absolute. The type of the output file is tool dependent.")
+                    ((OVERRIDE_OUTPUT_OPTION_NAME + ",r").c_str(),
                      po::bool_switch(&overrideOutputFile),
-                     "The path to the output file.")
-                    ("debug_parser",
-                     po::bool_switch(&debugParser),
+                     "Flag if the output file should be overridden if it already exists.")
+                    (DEBUG_PARSER_OPTION_NAME.c_str(), po::bool_switch(&debugParser),
                      "Flag if the parser is in debug mode.");
         }
 

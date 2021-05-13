@@ -33,7 +33,7 @@ namespace data_annotation_tools {
         }
 
         std::string toYAML(const cv::Mat &watershedRegions, int componentCount, bool keepBiggestComponent) {
-            int biggestComponent = GetBiggestComponent(watershedRegions, componentCount);
+            int biggestComponent = getBiggestComponent(watershedRegions, componentCount);
 
             std::map<int, std::vector<std::vector<int>>> componentsToPixels;
             for (int i = 0; i < watershedRegions.rows; i++) {

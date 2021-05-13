@@ -234,12 +234,12 @@ namespace data_annotation_tools {
         }
 
         cv::Rect Watersheder::getRoi() const {
-            int _posX = std::min(topLeftCorner.x, getMaxX() - 20);
-            int _posY = std::min(topLeftCorner.y, getMaxY() - 20);
+            int posX = std::min(topLeftCorner.x, getMaxX() - 20);
+            int posY = std::min(topLeftCorner.y, getMaxY() - 20);
 
-            int _height = std::max(20, std::min(getZoomHeight(), getMaxY() - _posY));
-            int _width = std::max((int) (20 * getAspect()), std::min(getZoomWidth(), getMaxX() - _posX));
-            return {_posX, _posY, _width, _height};
+            int height = std::max(20, std::min(getZoomHeight(), getMaxY() - posY));
+            int width = std::max((int) (20 * getAspect()), std::min(getZoomWidth(), getMaxX() - posX));
+            return {posX, posY, width, height};
         }
 
         int Watersheder::getZoomWidth() const {

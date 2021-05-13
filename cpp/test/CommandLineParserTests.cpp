@@ -15,6 +15,13 @@ namespace data_annotation_tools {
          */
         class CommandLineParserTests : public ::testing::Test {
             // Empty by choice, i.e just for naming the test suite.
+
+        public:
+
+            /**
+             * @destructor
+             */
+            virtual ~CommandLineParserTests() = default;
         };
 
         /**

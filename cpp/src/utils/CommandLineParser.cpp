@@ -33,12 +33,12 @@ namespace data_annotation_tools {
                 }
             }
 
-            if (!FileExists(get<std::string>("input"))) {
+            if (!fileExists(get<std::string>("input"))) {
                 std::cout << "Input file does not exist." << std::endl;
                 exit(EXIT_FAILURE);
             }
 
-            if (FileExists(get<std::string>("output")) && !overrideOutputFile) {
+            if (fileExists(get<std::string>("output")) && !overrideOutputFile) {
                 std::cout << "Output file does exist and override flag not set." << std::endl;
                 exit(EXIT_FAILURE);
             }

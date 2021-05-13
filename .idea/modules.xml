@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/DataAnnotationTools.iml" filepath="$PROJECT_DIR$/.idea/DataAnnotationTools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/DataAnnotationTools2.iml" filepath="$PROJECT_DIR$/.idea/DataAnnotationTools2.iml" />
     </modules>
   </component>
 </project>

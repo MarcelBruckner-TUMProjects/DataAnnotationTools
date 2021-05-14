@@ -84,8 +84,8 @@ have a marker region. This means that at least 2 markers need to be placed.
 - Repeatedly using `n` follows the mouse movement through the zoomed image.
 - If the algorithm does not correctly detect the object border, try to roughly outline the object by extending the
   background marker.
-- If you enclose a marker with a loop of another marker, the inner region of the inner marker will be part of the outer
-  markers region.
+- If you enclose a marker with a loop of another marker, the enclosed region of the inner marker will be part of the
+  outer markers region.
 
 </details>
 

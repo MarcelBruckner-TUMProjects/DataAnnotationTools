@@ -28,7 +28,7 @@ cmake --build . -j8
 
 <details>
 <summary>Watersheder</summary>
-
+<br>
 The WaterSheder is an marker based image segmentation tool.
 
 - [The OpenCV description](https://docs.opencv.org/master/d3/db4/tutorial_py_watershed.html)

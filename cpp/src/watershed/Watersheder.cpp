@@ -21,8 +21,11 @@ namespace data_annotation_tools {
 
         void Watersheder::onMouse(int event, int x, int y, int flags, void *rawWatersheder) {
             auto watersheder = (Watersheder *) rawWatersheder;
-            int totalX = watersheder->topLeftCorner.x + x;
-            int totalY = watersheder->topLeftCorner.y + y;
+
+            auto roi = watersheder->getRoi();
+            int totalX = roi.x + x;
+            int totalY = roi.y + y;
+
             if (totalX < 0 || totalX >= watersheder->getMaxX() || totalY < 0 || y >= watersheder->getMaxY()) {
                 return;
             }
@@ -235,8 +238,8 @@ namespace data_annotation_tools {
         }
 
         cv::Rect Watersheder::getRoi() const {
-            int width = std::max(20, getZoomWidth());
-            int height = std::max(20, getZoomHeight());
+            int width = std::max(20, getZoomWidth() - 1);
+            int height = std::max(20, getZoomHeight() - 1);
 
             int posX = std::min(topLeftCorner.x, getMaxX() - width + 1);
             int posY = std::min(topLeftCorner.y, getMaxY() - height + 1);

@@ -37,7 +37,7 @@ results in a segmentation around the border of objects with the same color.
 
 To segment an image using the WaterSheder mark connected regions with the mouse. All connected markers form one region,
 and you can extend a region by extending the marker. The biggest component needs to be the background, which itself must
-have a marker region. This means that at least 2 markers need to be placed when extracting 1 object.
+have a marker region. This means that at least 2 markers need to be placed.
 
 - [The OpenCV description](https://docs.opencv.org/master/d3/db4/tutorial_py_watershed.html)
 - [A great overview over the origin](http://www.cmm.mines-paristech.fr/~beucher/wtshed.html)
@@ -82,6 +82,10 @@ have a marker region. This means that at least 2 markers need to be placed when 
 - Save often! There is no way to reload when the program was closed.
 - Zoom in and out of the image with `n` and `b`.
 - Repeatedly using `n` follows the mouse movement through the zoomed image.
+- If the algorithm does not correctly detect the object border, try to roughly outline the object by extending the
+  background marker.
+- If you enclose a marker with a loop of another marker, the inner region of the inner marker will be part of the outer
+  markers region.
 
 </details>
 

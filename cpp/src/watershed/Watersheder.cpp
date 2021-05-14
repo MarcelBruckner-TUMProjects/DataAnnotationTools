@@ -229,17 +229,22 @@ namespace data_annotation_tools {
             } else {
                 result = (watershedMask * 0.5 + imageGray * 0.5);
             }
-            result = (result + drawnMarkers + markerIds)(getRoi());
+            auto roi = getRoi();
+            result = (result + drawnMarkers + markerIds)(roi);
             return result.clone();
         }
 
         cv::Rect Watersheder::getRoi() const {
-            int posX = std::min(topLeftCorner.x, getMaxX() - 20);
-            int posY = std::min(topLeftCorner.y, getMaxY() - 20);
+            int width = std::max(20, getZoomWidth());
+            int height = std::max(20, getZoomHeight());
 
-            int height = std::max(20, std::min(getZoomHeight(), getMaxY() - posY));
-            int width = std::max((int) (20 * getAspect()), std::min(getZoomWidth(), getMaxX() - posX));
-            return {posX, posY, width, height};
+            int posX = std::min(topLeftCorner.x, getMaxX() - width + 1);
+            int posY = std::min(topLeftCorner.y, getMaxY() - height + 1);
+
+            auto roi = cv::Rect{posX, posY, width, height};
+
+            std::cout << roi << std::endl;
+            return roi;
         }
 
         int Watersheder::getZoomWidth() const {

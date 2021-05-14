@@ -80,7 +80,7 @@ namespace data_annotation_tools {
             /**
              * The quickZoom level.
              */
-            int quickZoomLevel = 3;
+            int quickZoomLevel = 10;
 
             /**
              * The name of the trackbar for the width.

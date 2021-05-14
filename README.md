@@ -27,9 +27,17 @@ cmake --build . -j8
 ## Running
 
 <details>
-<summary>Watersheder</summary>
+<summary>WaterSheder</summary>
 <br>
-The WaterSheder is an marker based image segmentation tool.
+
+### A Marker-based Image Segmentation Tool
+
+The algorithm fills the image from drawn marker locations until the image gradient surpasses a specific threshold. This
+results in a segmentation around the border of objects with the same color.
+
+To segment an image using the WaterSheder mark connected regions with the mouse. All connected markers form one region,
+and you can extend a region by extending the marker. The biggest component needs to be the background, which itself must
+have a marker region. This means that at least 2 markers need to be placed when extracting 1 object.
 
 - [The OpenCV description](https://docs.opencv.org/master/d3/db4/tutorial_py_watershed.html)
 - [A great overview over the origin](http://www.cmm.mines-paristech.fr/~beucher/wtshed.html)
@@ -52,14 +60,28 @@ The WaterSheder is an marker based image segmentation tool.
 |`b`| Quick zoom out of the image to see the full image. |
 |`c`| Clear all markers in the current visible region. |
 |`d`| Toggle delete mode. In delete mode left mouse button strokes remove marked pixels. |
-|`n`| Quick zoom into the image to see the enlarged region around your mouse location. |
+|`n`| Quick zoom into the image to see the enlarged region around your mouse location. <br> The resulting zoom level is based on the `Quick Zoom` trackbar value. |
 |`q`| Quit program (Without confirmation). |
 |`r`| Toggle to render the watershed mask. |
 |`s`| Save the watershed results as a YAML file specified by `-o/--output`. |
 |`w`, `SPACE`| Run the watershed algorithm based on the current markers. |
 |`0` … `9`  | Set stroke thickness of the left mouse button. |
 
-[comment]: <> (|``|  |)
+### Sliders
+
+| Key | Description |  
+| ---------- | ----------- |
+| `Pos X` | Sets the X pixel position of the top left corner of the visible region. |
+| `Pos Y` | Sets the Y pixel position of the top left corner of the visible region. |
+| `Zoom` | The current zoom level. 0 = Total zoomed in, 100 = Full image shown. |
+| `Quick Zoom` | The zoom level after hitting `n`.  |
+| `Thickness` | The thickness of the left mouse button stroke. |
+
+### Best Practices
+
+- Save often! There is no way to reload when the program was closed.
+- Zoom in and out of the image with `n` and `b`.
+- Repeatedly using `n` follows the mouse movement through the zoomed image.
 
 </details>
 

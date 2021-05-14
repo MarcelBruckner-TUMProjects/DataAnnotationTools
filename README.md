@@ -24,7 +24,16 @@ cmake --build . -j8
 -DWITH_TESTS=ON/OFF     # Build with tests.
 ```
 
-## Running
+***
+
+## Testing
+
+```shell
+cd cpp 
+ctest --verbose
+```
+
+## Apps
 
 <details>
 <summary>WaterSheder</summary>
@@ -41,6 +50,10 @@ have a marker region. This means that at least 2 markers need to be placed.
 
 - [The OpenCV description](https://docs.opencv.org/master/d3/db4/tutorial_py_watershed.html)
 - [A great overview over the origin](http://www.cmm.mines-paristech.fr/~beucher/wtshed.html)
+
+![Example execution of the WaterSheder](https://github.com/Brucknem/DataAnnotationTools/blob/main/cpp/misc/watersheder.gif?raw=true)
+
+### Running
 
 ```shell
 ./cpp/app/WaterSheder -h  # Prints the help message.
@@ -88,15 +101,6 @@ have a marker region. This means that at least 2 markers need to be placed.
   outer markers region.
 
 </details>
-
-***
-
-## Testing
-
-```shell
-cd cpp 
-ctest --verbose
-```
 
 ***
 

@@ -14,7 +14,7 @@ namespace data_annotation_tools {
 
         template<typename T>
         T CommandLineParser::get(const std::string &key) {
-            return options[key].template as<T>();
+            return options[key].as<T>();
         }
 
         bool CommandLineParser::has(const std::string &key) {
@@ -44,7 +44,7 @@ namespace data_annotation_tools {
                 exit(EXIT_FAILURE);
             }
 
-            if (fileExists(get<std::string>(OVERRIDE_OUTPUT_OPTION_NAME)) && !overrideOutputFile) {
+            if (fileExists(get<std::string>(OUTPUT_OPTION_NAME)) && !overrideOutputFile) {
                 std::cout << "Output file does exist and override flag not set." << std::endl;
                 exit(EXIT_FAILURE);
             }

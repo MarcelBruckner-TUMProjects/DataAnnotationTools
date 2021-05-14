@@ -15,8 +15,8 @@ namespace data_annotation_tools {
     namespace watersheder {
 
         /**
-     * Wrapper for the watershed algorithm to ease the segmentation of objects.
-     */
+         * Wrapper for the watershed algorithm to ease the segmentation of objects.
+         */
         class Watersheder {
         private:
 

@@ -93,6 +93,7 @@ have a marker region. This means that at least 2 markers need to be placed.
 ### Best Practices
 
 - Save often! There is no way to reload when the program was closed.
+- Start by roughly filling the background with one big marker.
 - Zoom in and out of the image with `n` and `b`.
 - Repeatedly using `n` follows the mouse movement through the zoomed image.
 - If the algorithm does not correctly detect the object border, try to roughly outline the object by extending the

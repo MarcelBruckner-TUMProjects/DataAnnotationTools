@@ -108,11 +108,13 @@ namespace data_annotation_tools {
 
             /**
              * Flag indicating whether to draw the watershed mask and marker ids.
-             * 0: draw non
-             * 1: only draw mask
-             * 2: draw both
+             * 0: draw original image
+             * 1: draw original image, watershed markers
+             * 2: draw original image, watershed markers, watershed mask
+             * 3: draw original image, watershed markers, watershed mask, marker ids
+             * 4: draw original image, watershed mask, marker ids
              */
-            int drawWatershedMask = 2;
+            int drawWatershedMask = 3;
 
             /**
              * Flag if the biggest component should be skipped when writing to file.

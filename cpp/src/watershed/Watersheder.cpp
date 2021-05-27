@@ -99,7 +99,7 @@ namespace data_annotation_tools {
         void Watersheder::basicCommands(char c) {
             if (c == 'r') {
                 drawWatershedMask++;
-                drawWatershedMask %= 3;
+                drawWatershedMask %= 5;
             }
             if (c == 'd') {
                 isDeleteModeOn = !isDeleteModeOn;
@@ -119,7 +119,10 @@ namespace data_annotation_tools {
                                                                      keepBiggestComponent);
             outputFile.close();
 
+            auto tmpDraw = drawWatershedMask;
+            drawWatershedMask = 4;
             cv::imwrite(outputFilename + ".png", draw());
+            drawWatershedMask = tmpDraw;
         }
 
         void Watersheder::quickZoom(char c) {
@@ -235,15 +238,22 @@ namespace data_annotation_tools {
 
             switch (drawWatershedMask) {
                 case 0:
-                    result = image + drawnMarkers;
+                    result = image;
                     break;
                 case 1:
+                    result = image + drawnMarkers;
+                    break;
+                case 2:
                     result = (watershedMask * 0.5 + imageGray * 0.5);
                     result = result + drawnMarkers;
                     break;
-                default:
+                case 3:
                     result = (watershedMask * 0.5 + imageGray * 0.5);
                     result = result + drawnMarkers + markerIds;
+                    break;
+                default:
+                    result = (watershedMask * 0.5 + imageGray * 0.5);
+                    result = result + markerIds;
                     break;
             }
             return result.clone()(getRoi());

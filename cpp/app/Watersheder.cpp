@@ -3,7 +3,7 @@
 //
 #include "DataAnnotationTools/watershed/Watersheder.hpp"
 #include <boost/program_options.hpp>
-#include <DataAnnotationTools/utils/CommandLineParser.hpp>
+#include <DataAnnotationTools/watershed/CommandLineParser.hpp>
 
 namespace po = boost::program_options;
 
@@ -11,22 +11,14 @@ namespace po = boost::program_options;
  * Run the watersheder.
 g */
 int main(int argc, char const *argv[]) {
-    auto programOptions = data_annotation_tools::utils::CommandLineParser("Watersheder");
-    bool keepBiggestComponent;
-    programOptions.addOption()
-            ("keep_biggest_component,k",
-             po::bool_switch(&keepBiggestComponent),
-             "Flag to keep the biggest component when writing to the result file."
-            );
-    programOptions.parse(argc, argv);
+    auto parser = data_annotation_tools::utils::CommandLineParser("Watersheder");
+    auto programOptions = parser.parse(argc, argv);
 
     auto watersheder = data_annotation_tools::watersheder::Watersheder(
-            programOptions.get<std::string>("input"),
-            programOptions.get<std::string>("output"),
-            keepBiggestComponent);
-    watersheder.
-
-            run();
+            programOptions.inputFilename,
+            programOptions.outputFilename,
+            programOptions.keepBiggestKomponent);
+    watersheder.run();
 
     return 0;
 }

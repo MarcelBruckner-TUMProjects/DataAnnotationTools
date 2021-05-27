@@ -107,9 +107,12 @@ namespace data_annotation_tools {
             bool isDeleteModeOn = false;
 
             /**
-             * Flag indicating whether deletion mode is on.
+             * Flag indicating whether to draw the watershed mask and marker ids.
+             * 0: draw non
+             * 1: only draw mask
+             * 2: draw both
              */
-            bool drawWatershedMask = false;
+            int drawWatershedMask = 2;
 
             /**
              * Flag if the biggest component should be skipped when writing to file.
@@ -203,6 +206,8 @@ namespace data_annotation_tools {
              * The algorithm implementation.
              */
             bool algorithm();
+
+            void reset();
 
         public:
             /**

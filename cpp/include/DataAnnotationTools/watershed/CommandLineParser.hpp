@@ -28,6 +28,12 @@ namespace data_annotation_tools {
             return std::ifstream{name.c_str()}.good();
         }
 
+        struct ProgramOptions {
+            std::string inputFilename;
+            std::string outputFilename;
+            bool keepBiggestKomponent;
+        };
+
         /**
          * Base class for command line options parsing.
          */
@@ -45,19 +51,9 @@ namespace data_annotation_tools {
             po::variables_map options;
 
             /**
-             * Flag if the output file should be overridden.
+             * Creates the options used in the watersheder.
              */
-            bool overrideOutputFile = true;
-
-            /**
-             * Flag if the parser is in debug mode.
-             */
-            bool debugParser = true;
-
-            /**
-             * Creates the default options used in the data annotation tools.
-             */
-            void createDefaultOptions();
+            void createOptions();
 
         public:
 
@@ -80,34 +76,7 @@ namespace data_annotation_tools {
              * @param argc The number of options.
              * @param argv The options.
              */
-            void parse(int argc, const char **argv);
-
-            /**
-             * Checks if the given key is in the parsed command line options.
-             *
-             * @param key The name of the key.
-             *
-             * @return true if there was a command line option given with the key, false else.
-             */
-            bool has(const std::string &key);
-
-            /**
-             * Gets the command line option value of the given key.
-             *
-             * @tparam T The type of the value.
-             * @param key The key of the command line option.
-             *
-             * @return The command line option value.
-             */
-            template<typename T>
-            T get(const std::string &key);
-
-            /**
-             * Easy adding of additional options.
-             *
-             * @return The options description adding struct.
-             */
-            po::options_description_easy_init addOption();
+            ProgramOptions parse(int argc, const char **argv);
 
             /**
              * Output stream operator.

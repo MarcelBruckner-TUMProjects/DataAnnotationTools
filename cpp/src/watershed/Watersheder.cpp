@@ -98,7 +98,8 @@ namespace data_annotation_tools {
 
         void Watersheder::basicCommands(char c) {
             if (c == 'r') {
-                drawWatershedMask = !drawWatershedMask;
+                drawWatershedMask++;
+                drawWatershedMask %= 3;
             }
             if (c == 'd') {
                 isDeleteModeOn = !isDeleteModeOn;
@@ -114,9 +115,8 @@ namespace data_annotation_tools {
         void Watersheder::save() {
             std::ofstream outputFile;
             outputFile.open(outputFilename);
-            outputFile
-                    << data_annotation_tools::watersheder::toYAML(watershedRegions, componentCount,
-                                                                  keepBiggestComponent);
+            outputFile << data_annotation_tools::watersheder::toYAML(watershedRegions, componentCount,
+                                                                     keepBiggestComponent);
             outputFile.close();
 
             cv::imwrite(outputFilename + ".png", draw());
@@ -143,7 +143,7 @@ namespace data_annotation_tools {
 
         void Watersheder::performAlgorithm(char c) {
             if (c == 'w' || c == ' ') {
-                drawWatershedMask = algorithm();
+                bool success = algorithm();
             }
         }
 
@@ -167,7 +167,13 @@ namespace data_annotation_tools {
             return compCount;
         }
 
+        void Watersheder::reset() {
+            watershedMask = cv::Mat::zeros(drawnMarkers.size(), CV_8UC3);
+            markerIds = cv::Mat::zeros(drawnMarkers.size(), CV_8UC3);
+        }
+
         bool Watersheder::algorithm() {
+            reset();
             componentCount = findMarkerContours();
             if (componentCount <= 0) {
                 return false;
@@ -208,7 +214,7 @@ namespace data_annotation_tools {
 
         std::vector<cv::Vec3b> Watersheder::generateRandomColors(int amount) {
             std::vector<cv::Vec3b> colorTab;
-            for (int i = 0; i < amount; i++) {
+            for (size_t i = colorTab.size(); i < amount; i++) {
                 int b = cv::theRNG().uniform(0, 255);
                 int g = cv::theRNG().uniform(0, 255);
                 int r = cv::theRNG().uniform(0, 255);
@@ -227,14 +233,20 @@ namespace data_annotation_tools {
         cv::Mat Watersheder::draw() const {
             cv::Mat result;
 
-            if (!drawWatershedMask) {
-                result = image;
-            } else {
-                result = (watershedMask * 0.5 + imageGray * 0.5);
+            switch (drawWatershedMask) {
+                case 0:
+                    result = image + drawnMarkers;
+                    break;
+                case 1:
+                    result = (watershedMask * 0.5 + imageGray * 0.5);
+                    result = result + drawnMarkers;
+                    break;
+                default:
+                    result = (watershedMask * 0.5 + imageGray * 0.5);
+                    result = result + drawnMarkers + markerIds;
+                    break;
             }
-            auto roi = getRoi();
-            result = (result + drawnMarkers + markerIds)(roi);
-            return result.clone();
+            return result.clone()(getRoi());
         }
 
         cv::Rect Watersheder::getRoi() const {
@@ -246,7 +258,7 @@ namespace data_annotation_tools {
 
             auto roi = cv::Rect{posX, posY, width, height};
 
-            std::cout << roi << std::endl;
+//            std::cout << roi << std::endl;
             return roi;
         }
 

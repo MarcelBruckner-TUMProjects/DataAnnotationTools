@@ -50,6 +50,15 @@ namespace data_annotation_tools {
             }
 
             YAML::Emitter yaml;
+            yaml << YAML::BeginMap;
+
+            yaml << YAML::Key << "image_size" << YAML::Value;
+            yaml << YAML::Comment("rows, columns");
+            yaml << YAML::Flow << YAML::BeginSeq << watershedRegions.rows << watershedRegions.cols << YAML::EndSeq;
+
+            yaml << YAML::Key << "component_count" << YAML::Value << componentsToPixels.size();
+
+            yaml << YAML::Key << "regions" << YAML::Value;
             yaml << YAML::BeginSeq;
             for (const auto &entry : componentsToPixels) {
                 yaml << YAML::BeginMap;
@@ -66,6 +75,8 @@ namespace data_annotation_tools {
                 yaml << YAML::EndMap;
             }
             yaml << YAML::EndSeq;
+            yaml << YAML::EndMap;
+
             return yaml.c_str();
         }
     }

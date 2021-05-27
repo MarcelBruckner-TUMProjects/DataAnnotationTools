@@ -3,7 +3,7 @@
 //
 
 #include "gtest/gtest.h"
-#include "DataAnnotationTools/utils/CommandLineParser.hpp"
+#include "DataAnnotationTools/watershed/CommandLineParser.hpp"
 
 namespace po = boost::program_options;
 

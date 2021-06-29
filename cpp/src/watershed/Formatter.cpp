@@ -63,6 +63,7 @@ namespace data_annotation_tools {
             for (const auto &entry : componentsToPixels) {
                 yaml << YAML::BeginMap;
                 yaml << YAML::Key << "id" << YAML::Value << entry.first;
+                yaml << YAML::Comment("Original id: " + std::to_string(entry.first));
                 yaml << YAML::Key << "size" << YAML::Value << entry.second.size();
                 yaml << YAML::Key << "pixels" << YAML::Value;
                 yaml << YAML::BeginSeq;

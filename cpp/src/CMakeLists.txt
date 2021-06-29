@@ -19,6 +19,8 @@ add_library(DataAnnotationTools-lib
         watershed/CommandLineParser.cpp
         watershed/Watersheder.cpp
         watershed/Formatter.cpp
+        CommandLineParser.cpp
+        ProgramOptions.cpp
         )
 
 target_include_directories(DataAnnotationTools-lib

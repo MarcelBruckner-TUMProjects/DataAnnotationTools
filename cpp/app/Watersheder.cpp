@@ -11,13 +11,16 @@ namespace po = boost::program_options;
  * Run the watersheder.
 g */
 int main(int argc, char const *argv[]) {
-    auto parser = data_annotation_tools::utils::CommandLineParser("Watersheder");
+    auto parser = data_annotation_tools::watersheder::utils::CommandLineParser("Watersheder");
+    parser.init();
     auto programOptions = parser.parse(argc, argv);
 
     auto watersheder = data_annotation_tools::watersheder::Watersheder(
-            programOptions.inputFilename,
-            programOptions.outputFilename,
-            programOptions.keepBiggestKomponent);
+            programOptions->inputFilename,
+            programOptions->outputFilename,
+            programOptions->keepBiggestKomponent);
+    delete programOptions;
+
     watersheder.run();
 
     return 0;

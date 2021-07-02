@@ -9,6 +9,7 @@
 #include <armadillo>
 
 #include "opencv2/opencv.hpp"
+#include "opencv2/ximgproc.hpp"
 #include "dbscan.h"
 
 namespace data_annotation_tools {
@@ -124,7 +125,7 @@ namespace data_annotation_tools {
                     }
                     crosses.emplace_back(cross);
 
-                    std::cout << cross << std::endl;
+//                    std::cout << cross << std::endl;
                 }
             }
             return crosses;
@@ -142,8 +143,10 @@ namespace data_annotation_tools {
 
         std::vector<std::pair<cv::Vec2f, cv::Vec2f>>
         extractHoughLines(const cv::Mat &image, double rho, double theta, int threshold) {
-            cv::Mat result = image.clone(), buffer;
-            cv::cvtColor(image, buffer, cv::COLOR_BGR2GRAY);
+            cv::Mat result = image.clone(), buffer = image.clone();
+            if (buffer.channels() > 1) {
+                cv::cvtColor(image, buffer, cv::COLOR_BGR2GRAY);
+            }
 
             // Standard Hough Line Transform
             std::vector<cv::Point2f> houghLines; // will hold the results of the detection
@@ -173,7 +176,13 @@ namespace data_annotation_tools {
                        bool withLines) {
             std::vector<std::vector<cv::Point>> contours;
             std::vector<cv::Vec4i> hierarchy;
-            cv::findContours(cannyImage, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+            cv::Mat grayscale = cannyImage.clone();
+            if (grayscale.channels() > 1) {
+                cv::cvtColor(grayscale, grayscale, cv::COLOR_BGR2GRAY);
+            }
+
+            cv::findContours(grayscale, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
             std::vector<std::vector<cv::Point>> filteredContours;
             for (const auto &contour : contours) {
@@ -415,14 +424,23 @@ namespace data_annotation_tools {
 
             auto contours = findRectangles(result, epsilonFactor, shapeLower, shapeUpper, withLines);
             contours = filterByWhiteMean(color, contours, colorMin);
-            result = drawContours(result, contours, true);
+//            result = drawContours(result, contours, true);
+            result = drawContours(result.size(), contours, true);
+//            cv::cvtColor(result, result, cv::COLOR_BGR2GRAY);
+//            cv::ximgproc::thinning(result, result);
+
+            contours = findRectangles(result, epsilonFactor, shapeLower, shapeUpper, withLines);
+            result = drawContours(result.size(), contours, true);
 
             if (drawHoughLines) {
                 auto lines = extractHoughLines(drawContours(result.size(), contours, true), rho, theta, threshold);
+//                auto lines = extractHoughLines(result, rho, theta, threshold);
                 auto intersections = calculateIntersections(lines);
                 auto clusters = kmeansCluster(intersections, vanishingPoints);
                 cv::Vec2f vanishingPoint = getHighestVanishingPoint(clusters);
                 lines = filterByDistancesFromVanishingPoint(lines, vanishingPoint);
+//                std::cout << lines.size() << std::endl;
+//                result = drawLines(result, lines, {255, 255, 255});
                 result = drawLines(result, lines);
             }
 //            intersections = calculateIntersections(lines, {{0, (float) image.rows},

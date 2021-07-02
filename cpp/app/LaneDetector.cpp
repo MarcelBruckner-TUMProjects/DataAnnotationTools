@@ -24,11 +24,11 @@ int main(int argc, char const *argv[]) {
     int cannyUpper = 100;
     int cannyUpperMax = cannyUpper * 4;
 
-    int withLines = 0;
+    int withLines = 1;
     int vanishingPoints = 3;
     int vanishingPointsMax = 20;
 
-    int rho = 100;
+    int rho = 115;
     int rhoMax = 200;
     int theta = 180;
     int thetaMax = 360;
@@ -37,7 +37,7 @@ int main(int argc, char const *argv[]) {
 
     int colorMin = 180;
     int colorMinMax = 255;
-    int scale = 50;
+    int scale = 100;
     int scaleMax = 100;
 
     // Canny, Sobel, Laplace

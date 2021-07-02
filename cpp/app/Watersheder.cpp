@@ -2,10 +2,7 @@
 // Created by brucknem on 13.01.21.
 //
 #include "DataAnnotationTools/watershed/Watersheder.hpp"
-#include <boost/program_options.hpp>
 #include <DataAnnotationTools/watershed/CommandLineParser.hpp>
-
-namespace po = boost::program_options;
 
 /**
  * Run the watersheder.

@@ -16,11 +16,16 @@ include_directories(${PROJECT_SOURCE_DIR}/cpp/include)
 ########################################################################################################################
 
 add_library(DataAnnotationTools-lib
+        CommandLineParser.cpp
+        ProgramOptions.cpp
+
         watershed/CommandLineParser.cpp
         watershed/Watersheder.cpp
         watershed/Formatter.cpp
-        CommandLineParser.cpp
-        ProgramOptions.cpp
+
+        lane_detection/LaneDetection.cpp
+
+        kdtree.cpp
         )
 
 target_include_directories(DataAnnotationTools-lib
@@ -33,4 +38,5 @@ target_link_libraries(DataAnnotationTools-lib
         ${OpenCV_LIBS}
         ${Boost_LIBRARIES}
         yaml-cpp
+        #        dbscan
         )

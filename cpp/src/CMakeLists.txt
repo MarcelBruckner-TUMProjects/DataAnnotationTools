@@ -26,6 +26,8 @@ add_library(DataAnnotationTools-lib
         lane_detection/LaneDetection.cpp
 
         kdtree.cpp
+        Gui.cpp
+        Algorithm.cpp
         )
 
 target_include_directories(DataAnnotationTools-lib

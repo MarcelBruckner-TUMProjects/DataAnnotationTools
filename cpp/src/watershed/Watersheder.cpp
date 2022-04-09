@@ -10,109 +10,9 @@
 
 namespace data_annotation_tools {
     namespace watersheder {
+        Watersheder::Watersheder(bool keepBiggestComponent) : keepBiggestComponent(keepBiggestComponent) {}
 
-        int Watersheder::getMaxX() const {
-            return image.cols - 1;
-        }
-
-        int Watersheder::getMaxY() const {
-            return image.rows - 1;
-        }
-
-        void Watersheder::onMouse(int event, int x, int y, int flags, void *rawWatersheder) {
-            auto watersheder = (Watersheder *) rawWatersheder;
-
-            auto roi = watersheder->getRoi();
-            int totalX = roi.x + x;
-            int totalY = roi.y + y;
-
-            if (totalX < 0 || totalX >= watersheder->getMaxX() || totalY < 0 || y >= watersheder->getMaxY()) {
-                return;
-            }
-            watersheder->hoverPoint = cv::Point{totalX, totalY};
-            if (event == cv::EVENT_LBUTTONUP || !(flags & cv::EVENT_FLAG_LBUTTON)) {
-                /// End of drawing
-                watersheder->drawingPointBuffer = cv::Point(-1, -1);
-            } else if (event == cv::EVENT_LBUTTONDOWN) {
-                /// Start of drawing
-                watersheder->drawingPointBuffer = cv::Point(totalX, totalY);
-            } else if (event == cv::EVENT_MOUSEMOVE && (flags & cv::EVENT_FLAG_LBUTTON)) {
-                /// Drawing
-                if (watersheder->thickness <= 0) {
-                    return;
-                }
-                cv::Point pt(totalX, totalY);
-                if (watersheder->drawingPointBuffer.x < 0) {
-                    watersheder->drawingPointBuffer = pt;
-                }
-                cv::Scalar result = cv::Scalar::all(255);
-                if (watersheder->isDeleteModeOn) {
-                    result = cv::Scalar::all(0);
-                }
-                cv::line(watersheder->drawnMarkers, watersheder->drawingPointBuffer, pt, result, watersheder->thickness,
-                         8, 0);
-                watersheder->drawingPointBuffer = pt;
-            }
-        }
-
-        Watersheder::Watersheder(const std::string &inputFilename, std::string outputFilename,
-                                 bool keepBiggestComponent) : inputFilename(inputFilename), outputFilename
-                (std::move(outputFilename)), keepBiggestComponent(keepBiggestComponent) {
-            image = cv::imread(inputFilename);
-            cv::namedWindow(mainWindowName, cv::WINDOW_NORMAL);
-
-            cv::cvtColor(image, imageGray, cv::COLOR_BGR2GRAY);
-            cv::cvtColor(imageGray, imageGray, cv::COLOR_GRAY2BGR);
-            drawnMarkers = cv::Mat(image.size(), CV_8UC3, cv::Scalar::all(0));
-            watershedMask = cv::Mat(image.size(), CV_8UC3, cv::Scalar::all(0));
-
-            cv::setMouseCallback(mainWindowName, onMouse, this);
-            cv::createTrackbar(posXName, mainWindowName, &topLeftCorner.x, getMaxX());
-            cv::createTrackbar(posYName, mainWindowName, &topLeftCorner.y, getMaxY());
-
-            cv::createTrackbar(zoomLevelName, mainWindowName, &zoomLevel, 100);
-            cv::createTrackbar(quickZoomLevelName, mainWindowName, &quickZoomLevel, 100);
-            cv::createTrackbar(thicknessName, mainWindowName, &thickness, 9);
-
-            setTrackbarValues();
-        }
-
-        void Watersheder::run() {
-            for (;;) {
-                char c = (char) cv::waitKey(1);
-                if (c == 'q') {
-                    break;
-                }
-
-                basicCommands(c);
-                quickZoom(c);
-                setThickness(c);
-                performAlgorithm(c);
-
-                setTrackbarValues();
-
-                auto frame = draw();
-                cv::imshow(mainWindowName, frame);
-            }
-        }
-
-        void Watersheder::basicCommands(char c) {
-            if (c == 'r') {
-                drawWatershedMask++;
-                drawWatershedMask %= 5;
-            }
-            if (c == 'd') {
-                isDeleteModeOn = !isDeleteModeOn;
-            }
-            if (c == 'c') {
-                drawnMarkers(getRoi()) = cv::Scalar::all(0);
-            }
-            if (c == 's') {
-                save();
-            }
-        }
-
-        void Watersheder::save() {
+        void Watersheder::save(const std::string &outputFilename) {
             std::ofstream outputFile;
             outputFile.open(outputFilename);
             outputFile << data_annotation_tools::watersheder::toYAML(watershedRegions, componentCount,
@@ -123,31 +23,6 @@ namespace data_annotation_tools {
             drawWatershedMask = 4;
             cv::imwrite(outputFilename + ".png", draw());
             drawWatershedMask = tmpDraw;
-        }
-
-        void Watersheder::quickZoom(char c) {
-            if (c == 'n') {
-                zoomLevel = quickZoomLevel;
-                topLeftCorner.x = std::max(0, hoverPoint.x - getZoomWidth() / 2);
-                topLeftCorner.y = std::max(0, hoverPoint.y - getZoomHeight() / 2);
-            }
-            if (c == 'b') {
-                topLeftCorner.x = 0;
-                topLeftCorner.y = 0;
-                zoomLevel = 100;
-            }
-        }
-
-        void Watersheder::setThickness(char c) {
-            if (c >= '0' && c <= '9') {
-                thickness = (int) (c - '0');
-            }
-        }
-
-        void Watersheder::performAlgorithm(char c) {
-            if (c == 'w' || c == ' ') {
-                bool success = algorithm();
-            }
         }
 
         int Watersheder::findMarkerContours() {
@@ -173,18 +48,6 @@ namespace data_annotation_tools {
         void Watersheder::reset() {
             watershedMask = cv::Mat::zeros(drawnMarkers.size(), CV_8UC3);
             markerIds = cv::Mat::zeros(drawnMarkers.size(), CV_8UC3);
-        }
-
-        bool Watersheder::algorithm() {
-            reset();
-            componentCount = findMarkerContours();
-            if (componentCount <= 0) {
-                return false;
-            }
-
-            watershed(image, watershedRegions);
-            createWatershedMask();
-            return true;
         }
 
         void Watersheder::createWatershedMask() {
@@ -226,62 +89,99 @@ namespace data_annotation_tools {
             return colorTab;
         }
 
-        void Watersheder::setTrackbarValues() {
-            cv::setTrackbarPos(posXName, mainWindowName, topLeftCorner.x);
-            cv::setTrackbarPos(posYName, mainWindowName, topLeftCorner.y);
-            cv::setTrackbarPos(zoomLevelName, mainWindowName, zoomLevel);
-            cv::setTrackbarPos(thicknessName, mainWindowName, thickness);
+
+        bool Watersheder::run() {
+            reset();
+            componentCount = findMarkerContours();
+            if (componentCount <= 0) {
+                return false;
+            }
+
+            watershed(frame, watershedRegions);
+            createWatershedMask();
+            return true;
         }
 
-        cv::Mat Watersheder::draw() const {
+        cv::Mat Watersheder::draw() {
             cv::Mat result;
 
             switch (drawWatershedMask) {
                 case 0:
-                    result = image;
+                    result = frame;
                     break;
                 case 1:
-                    result = image + drawnMarkers;
+                    result = frame + drawnMarkers;
                     break;
                 case 2:
-                    result = (watershedMask * 0.5 + imageGray * 0.5);
+                    result = (watershedMask * 0.5 + grayscale * 0.5);
                     result = result + drawnMarkers;
                     break;
                 case 3:
-                    result = (watershedMask * 0.5 + imageGray * 0.5);
+                    result = (watershedMask * 0.5 + grayscale * 0.5);
                     result = result + drawnMarkers + markerIds;
                     break;
                 default:
-                    result = (watershedMask * 0.5 + imageGray * 0.5);
+                    result = (watershedMask * 0.5 + grayscale * 0.5);
                     result = result + markerIds;
                     break;
             }
-            return result.clone()(getRoi());
+            return result.clone();
         }
 
-        cv::Rect Watersheder::getRoi() const {
-            int width = std::max(20, getZoomWidth() - 1);
-            int height = std::max(20, getZoomHeight() - 1);
-
-            int posX = std::min(topLeftCorner.x, getMaxX() - width + 1);
-            int posY = std::min(topLeftCorner.y, getMaxY() - height + 1);
-
-            auto roi = cv::Rect{posX, posY, width, height};
-
-//            std::cout << roi << std::endl;
-            return roi;
+        void Watersheder::clear(const cv::Rect &roi) {
+            drawnMarkers(roi) = cv::Scalar::all(0);
         }
 
-        int Watersheder::getZoomWidth() const {
-            return (int) (image.cols * (zoomLevel / 100.));
+        void Watersheder::onMouse(int event, int x, int y, int flags) {
+
+            if (event == cv::EVENT_LBUTTONUP || !(flags & cv::EVENT_FLAG_LBUTTON)) {
+                /// End of drawing
+                drawingPointBuffer = cv::Point(-1, -1);
+            } else if (event == cv::EVENT_LBUTTONDOWN) {
+                /// Start of drawing
+                drawingPointBuffer = cv::Point(x, y);
+            } else if (event == cv::EVENT_MOUSEMOVE && (flags & cv::EVENT_FLAG_LBUTTON)) {
+                /// Drawing
+                if (thickness <= 0) {
+                    return;
+                }
+                cv::Point pt(x, y);
+                if (drawingPointBuffer.x < 0) {
+                    drawingPointBuffer = pt;
+                }
+                cv::Scalar result = cv::Scalar::all(255);
+                if (isDeleteModeOn) {
+                    result = cv::Scalar::all(0);
+                }
+                cv::line(drawnMarkers, drawingPointBuffer, pt, result, thickness, 8, 0);
+                drawingPointBuffer = pt;
+            }
         }
 
-        int Watersheder::getZoomHeight() const {
-            return (int) (image.rows * (zoomLevel / 100.));
+        void Watersheder::onKeyboard(char c) {
+            if (c >= '0' && c <= '9') {
+                thickness = (int) (c - '0');
+            }
+
+            if (c == 'r') {
+                drawWatershedMask++;
+                drawWatershedMask %= 5;
+            }
         }
 
-        double Watersheder::getAspect() const {
-            return image.cols * 1. / image.rows;
+        void Watersheder::createTrackbars(const std::string &windowName) {
+            cv::createTrackbar(thicknessName, windowName, &thickness, 9);
+        }
+
+        void Watersheder::setTrackbarValues(const std::string &windowName) {
+            cv::setTrackbarPos(thicknessName, windowName, thickness);
+        }
+
+        void Watersheder::initialize(const cv::Mat &frame, const cv::Mat &grayscale) {
+            this->frame = frame;
+            this->grayscale = grayscale;
+            drawnMarkers = cv::Mat(frame.size(), CV_8UC3, cv::Scalar::all(0));
+            watershedMask = cv::Mat(frame.size(), CV_8UC3, cv::Scalar::all(0));
         }
     }
 }
